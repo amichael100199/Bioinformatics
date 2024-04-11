@@ -1,0 +1,180 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2758
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\csgray\c0;}
+\margl1440\margr1440\vieww14100\viewh11340\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 qiime tools import \\\
+  --type EMPSingleEndSequences \\\
+  --input-path emp-single-end-sequences \\\
+  --output-path emp-single-end-sequences.qza\
+#Import my files into qiime 2 to edit my file#\
+\
+qiime demux emp-single \\\
+  --i-seqs emp-single-end-sequences.qza \\\
+  --m-barcodes-file sample-metadata.tsv \\\
+  --m-barcodes-column barcode-sequence \\\
+  --o-per-sample-sequences demux.qza \\\
+  --o-error-correction-details demux-details.qza\
+#Demultiplex my files in qiime 2#\
+\
+qiime demux summarize \\\
+  --i-data demux.qza \\\
+  --o-visualization demux.qzv\
+#Creates a demux visualization#\
+#Shows us quality of the sequencing reads#\
+#So we know to keep the high quality reads#\
+\
+qiime tools view demux.qzv\
+#To view the file#\
+#The amount of reads shows how good the quality of the samples are, higher is better, lower is bad quality#\
+#Interactive quality plot gives a quality score, the higher quality score is a better quality, the lower is bad quality#\
+#Short reads will not really give an accurate representation#\
+\
+view.qiime2.org\
+#You can drop the file in here as well if it doesn\'92t work#\
+\
+qiime dada2 denoise-single \\\
+  --i-demultiplexed-seqs demux.qza \\\
+  --p-trim-left 0 \\\
+  --p-trunc-len 120 \\\
+  --o-representative-sequences rep-seqs-dada2.qza \\\
+  --o-table table-dada2.qza \\\
+  --o-denoising-stats stats-dada2.qza\
+#Quality control of reads, based on histogram trim 0 left truncate 120 right#\
+\
+qiime metadata tabulate \\\
+  --m-input-file stats-dada2.qza \\\
+  --o-visualization stats-dada2.qzv\
+#To visualize the stats#\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs22 \cf2 \CocoaLigature0 qiime tools view stats-dada2.qzv\
+#To view it, type this into terminal and it will open a window#\
+#This file can tell us if the quality is good or not, maybe we can change the parameters#\
+\
+mv rep-seqs-dada2.qza rep-seqs.qza\
+mv table-dada2.qza table.qza\
+mv stats-dada2.qza stats.qza\
+mv stats-dada2.qzv stats.qzv\
+#To rename the files#\
+\
+qiime feature-table summarize \\\
+  --i-table table.qza \\\
+  --o-visualization table.qzv \\\
+  --m-sample-metadata-file sample-metadata.tsv\
+qiime feature-table tabulate-seqs \\\
+  --i-data rep-seqs.qza \\\
+  --o-visualization rep-seqs.qzv\
+#to create visualization to see the table and sequences#\
+#notice how after quality control, we see much less number of frequencies#\
+#gives a alpha numeric code to each sequence that references a single organism#\
+#the ref seq.qzv gives us the sequence that we can blast now#\
+#on the table, you can use the alpha numeric code and then go to the ref-see.qzv file and find the sequence and then click on the sequence to blast it#\
+\
+qiime phylogeny align-to-tree-mafft-fasttree \\\
+  --i-sequences rep-seqs.qza \\\
+  --o-alignment aligned-rep-seqs.qza \\\
+  --o-masked-alignment masked-aligned-rep-seqs.qza \\\
+  --o-tree unrooted-tree.qza \\\
+  --o-rooted-tree rooted-tree.qza\
+#this command will generate both an unrooted and rooted phylogenetic tree#\
+#the command will use the alpha and beta diversities, and take into account the phylogenetic relationship between two organisms#\
+\
+qiime diversity core-metrics-phylogenetic \\\
+  --i-phylogeny rooted-tree.qza \\\
+  --i-table table.qza \\\
+  --p-sampling-depth 1103 \\\
+  --m-metadata-file sample-metadata.tsv \\\
+  --output-dir core-metrics-results\
+#generate alpha and beta diversity numbers using a sampling set of 1103#\
+\
+qiime diversity alpha-group-significance \\\
+  --i-alpha-diversity core-metrics-results/faith_pd_vector.qza \\\
+  --m-metadata-file sample-metadata.tsv \\\
+  --o-visualization core-metrics-results/faith-pd-group-significance.qzv\
+\
+qiime diversity alpha-group-significance \\\
+  --i-alpha-diversity core-metrics-results/evenness_vector.qza \\\
+  --m-metadata-file sample-metadata.tsv \\\
+  --o-visualization core-metrics-results/evenness-group-significance.qzv\
+#alpha diversity significance#\
+\
+qiime diversity beta-group-significance \\\
+  --i-distance-matrix core-metrics-results/unweighted_unifrac_distance_matrix.qza \\\
+  --m-metadata-file sample-metadata.tsv \\\
+  --m-metadata-column body-site \\\
+  --o-visualization core-metrics-results/unweighted-unifrac-body-site-significance.qzv \\\
+  --p-pairwise\
+\
+qiime diversity beta-group-significance \\\
+  --i-distance-matrix core-metrics-results/unweighted_unifrac_distance_matrix.qza \\\
+  --m-metadata-file sample-metadata.tsv \\\
+  --m-metadata-column subject \\\
+  --o-visualization core-metrics-results/unweighted-unifrac-subject-group-significance.qzv \\\
+  --p-pairwise\
+#beta diversity significance#\
+\
+wget \\\
+  -O "gg-13-8-99-515-806-nb-classifier.qza" \\\
+  "https://data.qiime2.org/2024.2/common/gg-13-8-99-515-806-nb-classifier.qza"\
+#download the taxonomic classifiers#\
+\
+qiime feature-classifier classify-sklearn \\\
+  --i-classifier gg-13-8-99-515-806-nb-classifier.qza \\\
+  --i-reads rep-seqs.qza \\\
+  --o-classification taxonomy.qza\
+\
+qiime metadata tabulate \\\
+  --m-input-file taxonomy.qza \\\
+  --o-visualization taxonomy.qzv\
+#takes the ref seq artifact and compares it to the file downloaded above and create visualization in one command#\
+\
+qiime taxa barplot \\\
+  --i-table table.qza \\\
+  --i-taxonomy taxonomy.qza \\\
+  --m-metadata-file sample-metadata.tsv \\\
+  --o-visualization taxa-bar-plots.qzv\
+#creates a bar plot of the taxonomy data#\
+\
+qiime feature-table filter-samples \\\
+  --i-table table.qza \\\
+  --m-metadata-file sample-metadata.tsv \\\
+  --p-where "[body-site]='gut'" \\\
+  --o-filtered-table gut-table.qza\
+#filter sample using meta data and create an output of gut samples#\
+\
+qiime composition ancombc \\\
+  --i-table gut-table.qza \\\
+  --m-metadata-file sample-metadata.tsv \\\
+  --p-formula 'subject' \\\
+  --o-differentials ancombc-subject.qza\
+\
+qiime composition da-barplot \\\
+  --i-data ancombc-subject.qza \\\
+  --p-significance-threshold 0.001 \\\
+  --o-visualization da-barplot-subject.qzv\
+#is there a difference between person 1 and 2, then is there any statistical significance#\
+\
+qiime taxa collapse \\\
+  --i-table gut-table.qza \\\
+  --i-taxonomy taxonomy.qza \\\
+  --p-level 6 \\\
+  --o-collapsed-table gut-table-l6.qza\
+\
+qiime composition ancombc \\\
+  --i-table gut-table-l6.qza \\\
+  --m-metadata-file sample-metadata.tsv \\\
+  --p-formula 'subject' \\\
+  --o-differentials l6-ancombc-subject.qza\
+\
+qiime composition da-barplot \\\
+  --i-data l6-ancombc-subject.qza \\\
+  --p-significance-threshold 0.001 \\\
+  --p-level-delimiter ';' \\\
+  --o-visualization l6-da-barplot-subject.qzv\
+#look only at the genus level#\
+\
+}

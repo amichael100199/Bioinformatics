@@ -1,0 +1,7 @@
+#create environment
+
+Mamba activate genomeassembly
+
+# abyss on paired end reads kmer 96bp on putative Salmonella Genome
+
+abyss-pe name=Unknown k=96 B=2G in='sr1.fastq.gz sr2.fastq.gz'

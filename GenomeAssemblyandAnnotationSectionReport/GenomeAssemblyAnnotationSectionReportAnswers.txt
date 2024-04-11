@@ -1,0 +1,15 @@
+1.) file (stats.csv)
+2.) The command that is used is... abyss-pe name=ecoli k=96 B=2G in='reads1.fa reads2.fa' in this command we are telling the console to run an ABySS paired read. We are then telling it to name the output file "ecoli". Then we are stating the length of the k-mer (k). The B is the bloom filter, I believe this is just a type of mode to use. And lastly, we are telling it to use the files "reads1.fa" and "reads2.fa".
+3.) The species that I got was Bacillus velezensis
+4.) After preforming a QUAST using both my ABySS and SPAdes data, my results show that when using the SPAdes data I got the higher quality. I think this is true because when looking at the results of the QUAST, the graph is showing a perfect match when I used the SPAdes but not as good with the ABySS.
+5.) BUSCO stands for Benchmarking Universal Single Copy Orthologs. After looking at my data I think that the number for my genome is 98.839.
+6.) file (gene results.csv)
+7.) When I ran PROKKA I did it on the Galaxy website. But after looking through the instructions, in order to use it you would use the code... prokka contigs.fa In this line of code I think you are just telling the console to run a PROKKA on the file "contains.fa" 
+8.) file (gene results.csv)
+9.) After getting the RAST results, this is what I learned about my proteins I chose:
+yhcN: this is a lipoprotein that is for putative spore germination
+rluD: this is a large ribosomal subunit used in pseudouridine synthase D
+glpP: this is a glycerol uptake operon anti terminator regulatory protein
+10.) link to GitHub: https://github.com/amichael100199/Bioinformatics.git 
+
+
