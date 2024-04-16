@@ -1,0 +1,3 @@
+qiime tools export --input-path demux.qza --output-path sequences
+# this will allow us to demux and the output path was sequences #
+
