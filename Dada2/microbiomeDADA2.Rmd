@@ -89,4 +89,10 @@ load("RData/seqtab.nochim.RData")
 
 # assign taxonomy
 ```{r}
+taxa <- assignTaxonomy(seqtab.nochim, "silva_nr99_v138.1_wSpecies_train_set.fa.gz", multithread=TRUE)
+```
 
+# save taxonomy as a file
+```{r}
+save(taxa, file="RData/taxa.RData")
+```
