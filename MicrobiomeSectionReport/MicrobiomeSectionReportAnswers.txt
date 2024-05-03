@@ -1,0 +1,52 @@
+1). I chose these numbers because the graph shows that the quality falls off after 250 in the forward reads and 225 in the reverse reads.
+
+2). I would modify the code to this:
+qiime dada2 denoise-paired \
+  --i-demultiplexed-seqs demux.qza \
+  --p-trim-left-f 0  \
+  --p-trunc-len-f 250  \
+  --p-trim-left-r 0  \
+  --p-trunc-len-r 225  \
+  --o-representative-sequences rep-seqs.qza \
+  --o-table table.qza \
+  --o-denoising-stats stats.qza
+
+3). I modified the code to the above also by just changing the names of the output files by deleting the -dada2 part of the file name, this will skip the mv step. Next in order to run the qiime metadata tubulate code, I changed the code to the code below. I basically just changed the file names to match with the earlier output files.
+qiime metadata tabulate \
+  --m-input-file stats.qza \
+  --o-visualization stats.qzv
+
+4). To use the new metadata file that was given to us, I just have to change my code to have the name of the new files instead, it was sample-metadata and now I changed it to just metadata.
+qiime feature-table summarize \
+  --i-table table.qza \
+  --o-visualization table.qzv \
+  --m-sample-metadata-file metadata.txt
+qiime feature-table tabulate-seqs \
+  --i-data rep-seqs.qza \
+  --o-visualization rep-seqs.qzv
+
+5). Screenshot file names are
+"RepSeqsqzvScreenshot.png"
+"StatsqzvScreenshot.png"
+
+6). The top 3 hits I got were all the same, I added the screenshot to my files, it is named "TaxonomyByConfidence.png". The top hit was Rickettsiales. This is an order in the class Alphaproteobacteria.
+
+7). This code is going to make a table with the taxa that is filtered to take out any mitochondria and chloroplast. This is necessary because we are not looking for these at all, so we want to take them out of our results.
+
+8). I re did my code for the table visualization, however I got the same hits when looking at my highest confidence. When I re did my bar plot though, I did see that they have changed because now I am filtering out the mitochondria and the chloroplast. 
+
+9). I have included the screenshots in my files named "TopTwoPhyla.png" and "TopFiveClasses.png". The top two phyla that I see are Alphaproteobacteria, and Actinobacteria. The top five classes I see are Rhizobiales, and Actinomycetales. 
+
+10). Alpha diversity is when we are describing the species diversity within a smaller area like a community, basically at a small scale. Beta diversity is when you are comparing the species diversity between communities. It is at a larger scale than the alpha diversity.
+
+11). I will use 1,396 as my sampling depth I used the "table.qzv" file to see the lowest number I can choose above 1,000. I honestly chose this because I remember in class that the ones under 1,000 are not good. I still retain 20 samples and only lose 4 samples.
+
+12). The metadata values that were in the graphs generated was "population", "sex", and "flock". The comparisons were not significant. I know they were not because none of the p-values were below 0.05, this means we cannot rule out the null hypothesis. Shannon diversity is a population metric that is used to tell us the abundance and the evenness of the species present. The observed features is a sort of metric that is used to count how many different features there are in a given sample.
+
+13). I have included all of the screenshots and named them by "sex", "population", and "flock". Looking at all of the results, I found out that there is no significant relationship between any of the categories. Since beta diversity is looking at two different communities and comparing them. This means that between these different communities in our data, there is no significant relationship between any of them because there was no p-value that was less than 0.05. 
+
+14). I think that the screenshots from the graphs directly go with the results that are showing that there is no significant relationship. I think this because the graph would show some sort of nice points going one direction. The graphs are mostly showing that the points don't really follow a path or trajectory, they look more just randomly dotted. 
+
+
+
+

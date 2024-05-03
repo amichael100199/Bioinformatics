@@ -1,0 +1,140 @@
+# to get into the qiime2 environment.
+conda activate qiime2-amplicon-2024.2
+
+# to get the sequences once in the environment, this will allow us to demux and the 
+# output path was sequences.
+qiime tools export --input-path demux.qza --output-path sequences
+
+# this will create a demux visualization, it will show us the quality of the
+# sequencing reads so we know to keep the high quality reads.
+qiime demux summarize \
+  --i-data demux.qza \
+  --o-visualization demux.qzv
+
+# this will make our quality control or the reads, for the forward read I chose 0 left # truncate 250 right, for the reverse read I chose 0 left truncate 225 right.
+qiime dada2 denoise-paired \
+  --i-demultiplexed-seqs demux.qza \
+  --p-trim-left-f 0  \
+  --p-trunc-len-f 250  \
+  --p-trim-left-r 0  \
+  --p-trunc-len-r 225  \
+  --o-representative-sequences rep-seqs.qza \
+  --o-table table.qza \
+  --o-denoising-stats stats.qza
+
+# this will give us a file to visualize the stats.
+qiime metadata tabulate \
+  --m-input-file stats.qza \
+  --o-visualization stats.qzv
+
+# this will allow us to visualize the stats.
+qiime tools view stats.qzv
+
+# this will show us the rep-seqs file stats to see the table and sequences.
+qiime feature-table summarize \
+  --i-table table.qza \
+  --o-visualization table.qzv \
+  --m-sample-metadata-file metadata.txt
+qiime feature-table tabulate-seqs \
+  --i-data rep-seqs.qza \
+  --o-visualization rep-seqs.qzv
+
+# this will allow us to visualize the data from these files we just got.
+qiime tools view rep-seqs.qzv
+qiime tools view stats.qzv
+
+# this will tell the program to download the taxonomic classifier.
+wget \
+  -O "gg-13-8-99-515-806-nb-classifier.qza" \
+  "https://data.qiime2.org/2024.2/common/gg-13-8-99-515-806-nb-classifier.qza"
+
+# this will input the classifier that we just downloaded from the above code and
+# output a "taxonomy.qza" file.
+qiime feature-classifier classify-sklearn \
+  --i-classifier gg-13-8-99-515-806-nb-classifier.qza \
+  --i-reads rep-seqs.qza \
+  --o-classification taxonomy.qza
+
+# now we can use the output file "taxonomy.qza" and turn it into a ".qzv" file so we
+# can take the ref seq artifact and compare it to the file downloaded above and create
+# a visualization.
+qiime metadata tabulate \
+  --m-input-file taxonomy.qza \
+  --o-visualization taxonomy.qzv
+
+# to visualize the "taxonomy.qzv" file to see the top hits by confidence.
+qiime tools view taxonomy.qzv 
+
+# this code will give us a filtered table without chloroplast and mitochondria.
+qiime taxa filter-table \
+  --i-table table.qza \
+  --i-taxonomy taxonomy.qza \
+  --p-exclude mitochondria,chloroplast \
+  --o-filtered-table table.qza
+
+# this code will make a bar plot of the samples and you can see the taxonomy of all of the samples as well
+qiime taxa barplot \
+  --i-table table.qza \
+  --i-taxonomy taxonomy.qza \
+  --m-metadata-file metadata.txt \
+  --o-visualization taxa-bar-plots.qzv
+
+# this will generate alpha and beta diversity numbers using a sampling set of 1396
+qiime diversity core-metrics-phylogenetic \
+  --i-phylogeny rooted-tree.qza \
+  --i-table table.qza \
+  --p-sampling-depth 1396 \
+  --m-metadata-file metadata.txt \
+  --output-dir core-metrics-results
+
+# these two codes will give us the alpha diversity of the observed features, and
+# the Shannon diversity
+qiime diversity alpha-group-significance \
+  --i-alpha-diversity core-metrics-results/observed_features_vector.qza \
+  --m-metadata-file metadata.txt \
+  --o-visualization core-metrics-results/observed-group-significance.qzv
+
+qiime diversity alpha-group-significance \
+  --i-alpha-diversity core-metrics-results/shannon_vector.qza \
+  --m-metadata-file metadata.txt \
+  --o-visualization core-metrics-results/shannon-group-significance.qzv
+
+# these next 3 codes will show us the beta diversity. We will be making a visualization for "sex", "population", and "flock.
+qiime diversity beta-group-significance \
+  --i-distance-matrix core-metrics-results/unweighted_unifrac_distance_matrix.qza \
+  --m-metadata-file metadata.txt \
+  --m-metadata-column sex \
+  --o-visualization core-metrics-results/unweighted-unifrac-sex-significance.qzv \
+  --p-pairwise
+
+qiime diversity beta-group-significance \
+  --i-distance-matrix core-metrics-results/unweighted_unifrac_distance_matrix.qza \
+  --m-metadata-file metadata.txt \
+  --m-metadata-column population \
+  --o-visualization core-metrics-results/unweighted-unifrac-population-significance.qzv \
+  --p-pairwise
+
+qiime diversity beta-group-significance \
+  --i-distance-matrix core-metrics-results/unweighted_unifrac_distance_matrix.qza \
+  --m-metadata-file metadata.txt \
+  --m-metadata-column flock \
+  --o-visualization core-metrics-results/unweighted-unifrac-flock-significance.qzv \
+  --p-pairwise
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
