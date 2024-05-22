@@ -1,0 +1,35 @@
+Title: fasta file
+Description
+  Analysis ====================
+    Analysis                                       = ====================
+       Scope                                       = Pairs of taxa
+    Estimate Variance                              = ====================
+       Variance Estimation Method                  = Bootstrap method
+          No. of Bootstrap Replications            = 1000
+    Substitution Model                             = ====================
+       Substitutions Type                          = Amino acid
+       Model/Method                                = Poisson model
+    Rates and Patterns                             = ====================
+       Rates among Sites                           = Uniform Rates
+       Pattern among Lineages                      = Same (Homogeneous)
+    Data Subset to Use                             = ====================
+       Gaps/Missing Data Treatment                 = Pairwise deletion
+
+[1] #Protein_sequence_envZ_from_E._coli
+[2] #Protein_sequence_envZ_from_C._farmeri
+[3] #Protein_sequence_envZ_from_S._bongori
+[4] #Protein_sequence_envZ_from_Y._regensburgei
+
+[        1      2      3      4 ]
+[1]         
+[2]  0.0341        
+[3]  3.3300 3.3300        
+[4]  0.0695 0.0623 3.2693        
+
+Table. Estimates of Evolutionary Divergence between Sequences
+The number of amino acid substitutions per site from between sequences are shown. Analyses were conducted using the Poisson correction model [1]. This analysis involved 4 amino acid sequences. All ambiguous positions were removed for each sequence pair (pairwise deletion option). There were a total of 447 positions in the final dataset. Evolutionary analyses were conducted in MEGA11 [2][3]
+
+1. Zuckerkandl E. and Pauling L. (1965). Evolutionary divergence and convergence in proteins. Edited in Evolving Genes and Proteins by V. Bryson and H.J. Vogel, pp. 97-166. Academic Press, New York.
+2. Tamura K., Stecher G., and Kumar S. (2021). MEGA 11: Molecular Evolutionary Genetics Analysis Version 11. Molecular Biology and Evolution https://doi.org/10.1093/molbev/msab120.
+3. Stecher G., Tamura K., and Kumar S. (2020). Molecular Evolutionary Genetics Analysis (MEGA) for macOS. Molecular Biology and Evolution 37:1237-1239.
+Disclaimer: Although utmost care has been taken to ensure the correctness of the caption, the caption text is provided "as is" without any warranty of any kind. Authors advise the user to carefully check the caption prior to its use for any purpose and report any errors or problems to the authors immediately (www.megasoftware.net). In no event shall the authors and their employers be liable for any damages, including but not limited to special, consequential, or other damages. Authors specifically disclaim all other warranties expressed or implied, including but not limited to the determination of suitability of this caption text for a specific purpose, use, or application.
